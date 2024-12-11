@@ -1,11 +1,5 @@
 <script setup>
-// import { Swiper, SwiperSlide } from 'swiper/vue';
 import { Autoplay, Navigation, Pagination } from 'swiper/modules';
-
-// import 'swiper/css';
-// import 'swiper/css/navigation';
-// import 'swiper/css/pagination';
-
 const modules = ref([Autoplay, Navigation, Pagination]);
 
 const importImage = (url) => {
@@ -20,8 +14,8 @@ const roomImages = computed(() => {
   const result = rooms.reduce((acc, roomId) => {
     acc[`room${roomId.toUpperCase()}`] = nums.reduce((obj, num) => {
       obj[num] = {
-        desktop: importImage(`../assets/images/room-${roomId}-${num}.png`),
-        mobile: importImage(`../assets/images/room-${roomId}-sm-${num}.png`),
+        desktop: importImage(`../../assets/images/room-${roomId}-${num}.png`),
+        mobile: importImage(`../../assets/images/room-${roomId}-sm-${num}.png`),
       };
       return obj;
     }, {});
@@ -170,7 +164,7 @@ const roomImages = computed(() => {
                   >
                     <p class="mb-0 fw-bold">NT$ 10,000</p>
                     <NuxtLink
-                      to="/room-detail"
+                      to="/rooms/a"
                       class="icon-link icon-link-hover text-primary-100"
                     >
                       <Icon class="bi fs-5" icon="mdi:arrow-right" />
@@ -266,7 +260,7 @@ const roomImages = computed(() => {
                   >
                     <p class="mb-0 fw-bold">NT$ 10,000</p>
                     <NuxtLink
-                      to="/room-detail"
+                      to="/rooms/b"
                       class="icon-link icon-link-hover text-primary-100"
                     >
                       <Icon class="bi fs-5" icon="mdi:arrow-right" />
@@ -362,7 +356,7 @@ const roomImages = computed(() => {
                   >
                     <p class="mb-0 fw-bold">NT$ 10,000</p>
                     <NuxtLink
-                      to="/room-detail"
+                      to="/rooms/c"
                       class="icon-link icon-link-hover text-primary-100"
                     >
                       <Icon class="bi fs-5" icon="mdi:arrow-right" />
@@ -458,7 +452,7 @@ const roomImages = computed(() => {
                   >
                     <p class="mb-0 fw-bold">NT$ 10,000</p>
                     <NuxtLink
-                      to="/room-detail"
+                      to="/rooms/d"
                       class="icon-link icon-link-hover text-primary-100"
                     >
                       <Icon class="bi fs-5" icon="mdi:arrow-right" />

@@ -1,5 +1,4 @@
 <script setup>
-// import { NuxtLink, RouterView } from 'vue-router';
 const route = useRoute();
 const { userId } = route.params;
 </script>

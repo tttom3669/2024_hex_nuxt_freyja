@@ -1,12 +1,4 @@
 <script setup>
-definePageMeta({
-  layout: 'user',
-});
-// import { NuxtLink } from 'vue-router';
-// import { Icon } from '@iconify/vue';
-
-// import 'bootstrap/js/dist/modal';
-
 const roomId = 'a'; // for navigation demo
 </script>
 
