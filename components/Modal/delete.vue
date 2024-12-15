@@ -4,7 +4,6 @@ defineProps({
   deleteMethod: Function,
   closeModal: Function,
 });
-// console.log(props.closeModal);
 </script>
 
 <template>

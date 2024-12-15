@@ -4,6 +4,7 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   app: {
     head: {
+      title: '享樂酒店｜Enjoyment Luxury Hotel',
       link: [
         { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
         {

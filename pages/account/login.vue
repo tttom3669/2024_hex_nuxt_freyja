@@ -26,27 +26,6 @@ const login = async () => {
   }
 };
 
-// const forgetPassword = async () => {
-//   try {
-//     const res = await $fetch(`/api/v1/user/forgot`, {
-//       method: 'POST',
-//       baseURL: 'https://freyja-wtj7.onrender.com/',
-//       body: {
-//         email: 'test1234@gmail.com',
-//         code: '0Zvjde',
-//         newPassword: 'Dirt5528295',
-//       },
-//     });
-//     console.log(res);
-
-//     $swalFire({ title: '成功更換密碼', icon: 'success' });
-//   } catch (error) {
-//     $swalFire({
-//       title: error.response._data.message || '更換密碼失敗',
-//       icon: 'error',
-//     });
-//   }
-// };
 </script>
 
 <template>

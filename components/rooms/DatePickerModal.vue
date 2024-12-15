@@ -12,11 +12,11 @@ onMounted(() => {
 });
 
 const openModal = () => {
-  modal.value.show();
+  modal.value.open();
 };
 
 const closeModal = () => {
-  modal.value.hide();
+  modal.value.close();
 };
 
 defineExpose({

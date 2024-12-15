@@ -125,7 +125,7 @@ onMounted(() => {
           class="btn btn-primary btn-sm"
           @click="openModal()"
         >
-          建立新商品
+          建立新消息
         </button>
       </div>
       <table class="table">
@@ -184,7 +184,7 @@ onMounted(() => {
             <div class="row">
               <div class="col-sm-4">
                 <div class="form-group mb-2">
-                  <label class="w-100" htmlFor="image">
+                  <label class="w-100" for="image">
                     輸入圖片網址
                     <input
                       v-model="tempNewData.image"
@@ -199,7 +199,7 @@ onMounted(() => {
               </div>
               <div class="col-sm-8">
                 <div class="form-group mb-2">
-                  <label class="w-100" htmlFor="title">
+                  <label class="w-100" for="title">
                     標題
                     <input
                       v-model="tempNewData.title"
@@ -213,7 +213,7 @@ onMounted(() => {
                 </div>
                 <hr />
                 <div class="form-group mb-2">
-                  <label class="w-100" htmlFor="description">
+                  <label class="w-100" for="description">
                     內容
                     <textarea
                       type="text"

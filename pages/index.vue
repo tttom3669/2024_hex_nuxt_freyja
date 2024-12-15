@@ -3,6 +3,7 @@ import { Autoplay, Navigation, Pagination } from 'swiper/modules';
 
 const modules = ref([Autoplay, Navigation, Pagination]);
 const newsData = ref([]);
+const roomsData = ref([]);
 const roomSwiper = ref(null);
 
 const slidePrev = () => {
@@ -13,14 +14,17 @@ const slideNext = () => {
   roomSwiper.value.$el.swiper.slideNext();
 };
 
-const { data } = await useFetch(`/api/v1/home/news/`, {
+const { data: newsResult } = await useFetch(`/api/v1/home/news/`, {
   baseURL: 'https://freyja-wtj7.onrender.com/',
   method: 'GET',
 });
-onMounted(() => {
-  newsData.value = data?._value.result;
-  newsData.value.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+const { data: roomResult } = await useFetch(`/api/v1/rooms/`, {
+  baseURL: 'https://freyja-wtj7.onrender.com/',
+  method: 'GET',
 });
+newsData.value = newsResult?._value?.result;
+roomsData.value = roomResult?._value?.result;
+newsData.value.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 </script>
 
 <template>
@@ -120,56 +124,6 @@ onMounted(() => {
                 </div>
               </div>
             </div>
-
-            <!-- <div class="card bg-transparent border-0">
-              <div
-                class="d-flex flex-column flex-md-row align-items-center gap-6"
-              >
-                <picture>
-                  <source
-                    srcset="@/assets/images/home-news-2.png"
-                    media="(min-width: 576px)"
-                  />
-                  <img
-                    src="@/assets/images/home-news-sm-2.png"
-                    class="w-100 rounded-3"
-                    alt="在雙人床上的兩顆灰色枕頭"
-                  />
-                </picture>
-                <div class="card-body p-0">
-                  <h3 class="card-title mb-2 mb-md-6 fw-bold">輕鬆住房專案</h3>
-                  <p class="card-text text-neutral-80 fs-8 fs-md-7 fw-medium">
-                    我們知道，有時候您只是需要一個舒適的地方放鬆心情。因此，我們推出了「輕鬆住房專案」，讓您無壓力地享受住宿。不管是短期的休息，還是長期的住宿，我們都會以最貼心的服務，讓您感到賓至如歸。
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div class="card bg-transparent border-0">
-              <div
-                class="d-flex flex-column flex-md-row align-items-center gap-6"
-              >
-                <picture>
-                  <source
-                    srcset="@/assets/images/home-news-3.png"
-                    media="(min-width: 576px)"
-                  />
-                  <img
-                    src="@/assets/images/home-news-sm-3.png"
-                    class="w-100 rounded-3"
-                    alt="坐在沙發上的聖誕麋鹿玩偶"
-                  />
-                </picture>
-                <div class="card-body p-0">
-                  <h3 class="card-title mb-2 mb-md-6 fw-bold">
-                    耶誕快樂，住房送禮
-                  </h3>
-                  <p class="card-text text-neutral-80 fs-8 fs-md-7 fw-medium">
-                    聖誕節來臨，我們為您準備了特別的禮物！在聖誕期間訂房，不僅有特別優惠，還會送上我們精心準備的聖誕禮物。讓我們一起慶祝這個溫馨的節日吧！
-                  </p>
-                </div>
-              </div>
-            </div> -->
           </div>
         </div>
       </div>
@@ -223,27 +177,33 @@ onMounted(() => {
           }"
           :loop="true"
         >
-          <SwiperSlide v-for="(num, index) in 5" :key="index">
+          <SwiperSlide>
             <picture>
               <source
-                srcset="@/assets/images/home-room-1.png"
+                :srcset="roomsData[0].imageUrl"
                 media="(min-width:768px)"
               />
-              <img
-                class="w-100"
-                src="@/assets/images/home-room-sm-1.png"
-                alt="room-a"
-              />
+              <img class="w-100" :src="roomsData[0].imageUrl" alt="room-a" />
+            </picture>
+          </SwiperSlide>
+          <SwiperSlide
+            v-for="(img, idx) in roomsData[0].imageUrlList"
+            :key="idx"
+          >
+            <picture>
+              <source :srcset="img" media="(min-width:768px)" />
+              <img class="w-100" :src="img" alt="room-a" />
             </picture>
           </SwiperSlide>
         </Swiper>
-
         <div class="room-intro-content text-neutral-0">
-          <h2 class="mb-2 mb-md-4 fw-bold">尊爵雙人房</h2>
+          <h2 class="mb-2 mb-md-4 fw-bold">{{ roomsData[0].name }}</h2>
           <p class="mb-6 mb-md-10 fs-8 fs-md-7">
-            享受高級的住宿體驗，尊爵雙人房提供給您舒適寬敞的空間和精緻的裝潢。
+            {{ roomsData[0].description }}
           </p>
-          <div class="mb-6 mb-md-10 fs-3 fw-bold">NT$ 10,000</div>
+          <div class="mb-6 mb-md-10 fs-3 fw-bold">
+            NT$ {{ roomsData[0].price.toLocaleString('zh-TW') }}
+          </div>
           <NuxtLink
             to="/rooms"
             class="btn btn-neutral-0 d-flex justify-content-end align-items-center gap-3 w-100 p-5 p-md-10 mb-6 mb-md-10 text-end text-neutral-100 fs-7 fs-md-5 fw-bold border-0"

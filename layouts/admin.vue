@@ -14,13 +14,13 @@
               <i class="bi bi-cup-fill me-2" />
               最新消息列表
             </NuxtLink>
-            <a
+            <NuxtLink
               class="list-group-item list-group-item-action py-3"
-              to="/admin/coupons"
+               to="/admin/rooms"
             >
               <i class="bi bi-ticket-perforated-fill me-2" />
-              優惠卷列表
-            </a>
+              房型列表
+            </NuxtLink>
             <a
               class="list-group-item list-group-item-action py-3"
               to="/admin/orders"
