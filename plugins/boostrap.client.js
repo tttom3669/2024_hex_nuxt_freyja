@@ -4,7 +4,20 @@ export default defineNuxtPlugin((nuxtApp) => {
   return {
     provide: {
       bootstrap: { ...bootstrap },
-      bsModal: (dom) => new bootstrap.Modal(dom),
+      bsModal: (dom) => {
+        const outPutModal = new bootstrap.Modal(dom);
+        return {
+          open: () => {
+            outPutModal.show();
+          },
+          close: () => {
+            outPutModal.hide();
+          },
+          modal: () => {
+            return outPutModal;
+          },
+        };
+      },
     },
   };
 });

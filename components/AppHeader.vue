@@ -1,31 +1,38 @@
 <script setup>
-// import { ref, onMounted, onUnmounted, computed } from 'vue';
-// import { NuxtLink, useRoute } from 'vue-router'
-// import { Icon } from '@iconify/vue';
-
-// import '@/node_modules/bootstrap/js/dist/collapse';
-// import '@/node_modules/bootstrap/js/dist/dropdown';
-
 const route = useRoute();
-
+const { $swalFire } = useNuxtApp();
 const transparentBgRoute = ['index', 'rooms'];
+const cookie = useCookie('auth');
+const isLogin = computed(() => cookie.value);
 
 const isTransparentRoute = computed(() =>
   transparentBgRoute.includes(route.name)
 );
-
 const isScrolled = ref(false);
-
+const user = ref({});
 const handleScroll = () => {
   isScrolled.value = window.scrollY > 50;
 };
 
+if (isLogin) {
+  const { data } = await useFetch(
+    `https://freyja-wtj7.onrender.com/api/v1/user/`,
+    {
+      headers: {
+        Authorization: cookie.value,
+      },
+    }
+  );
+  user.value = data?.value?.result;
+}
+
+const logout = () => {
+  cookie.value = null;
+  $swalFire({ title: '成功登出', icon: 'success' });
+};
+
 onMounted(() => {
   window.addEventListener('scroll', handleScroll);
-});
-
-onUnmounted(() => {
-  window.removeEventListener('scroll', handleScroll);
 });
 </script>
 
@@ -67,14 +74,14 @@ onUnmounted(() => {
               </NuxtLink>
             </li>
             <li class="d-none d-md-block nav-item">
-              <div class="btn-group">
+              <div v-if="isLogin" class="btn-group">
                 <button
                   type="button"
                   class="nav-link d-flex gap-2 p-4 text-neutral-0"
                   data-bs-toggle="dropdown"
                 >
                   <Icon class="fs-5" icon="mdi:account-circle-outline" />
-                  Jessica
+                  {{ user.name }}
                 </button>
                 <ul
                   class="dropdown-menu py-3 overflow-hidden"
@@ -84,10 +91,21 @@ onUnmounted(() => {
                     <a class="dropdown-item px-6 py-4" href="#">我的帳戶</a>
                   </li>
                   <li>
-                    <a class="dropdown-item px-6 py-4" href="#">登出</a>
+                    <a
+                      class="dropdown-item px-6 py-4"
+                      @click.prevent="logout"
+                      href="#"
+                      >登出</a
+                    >
                   </li>
                 </ul>
               </div>
+              <NuxtLink
+                v-else
+                class="nav-link p-4 text-neutral-0"
+                to="/account/login"
+                >登入</NuxtLink
+              >
             </li>
             <li class="d-md-none nav-item">
               <NuxtLink to="/" class="nav-link p-4 text-neutral-0">

@@ -18,4 +18,5 @@ export default defineNuxtConfig({
       ],
     },
   },
+  modules: ['@vee-validate/nuxt', '@pinia/nuxt'],
 });

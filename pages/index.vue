@@ -2,7 +2,7 @@
 import { Autoplay, Navigation, Pagination } from 'swiper/modules';
 
 const modules = ref([Autoplay, Navigation, Pagination]);
-
+const newsData = ref([]);
 const roomSwiper = ref(null);
 
 const slidePrev = () => {
@@ -12,6 +12,15 @@ const slidePrev = () => {
 const slideNext = () => {
   roomSwiper.value.$el.swiper.slideNext();
 };
+
+const { data } = await useFetch(`/api/v1/home/news/`, {
+  baseURL: 'https://freyja-wtj7.onrender.com/',
+  method: 'GET',
+});
+onMounted(() => {
+  newsData.value = data?._value.result;
+  newsData.value.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+});
 </script>
 
 <template>
@@ -85,33 +94,34 @@ const slideNext = () => {
             </div>
           </div>
           <div class="col-12 col-md-10 d-flex flex-column gap-10">
-            <div class="card bg-transparent border-0">
+            <div
+              v-for="item in newsData"
+              class="card bg-transparent border-0"
+              :key="item._id"
+            >
               <div
                 class="d-flex flex-column flex-md-row align-items-center gap-6"
               >
                 <picture>
-                  <source
-                    srcset="@/assets/images/home-news-1.png"
-                    media="(min-width: 576px)"
-                  />
+                  <source :srcset="item.image" media="(min-width: 576px)" />
                   <img
-                    src="@/assets/images/home-news-sm-1.png"
+                    :src="item.image"
                     class="w-100 rounded-3"
                     alt="可看見海景及泳池的套房"
                   />
                 </picture>
                 <div class="card-body p-0">
                   <h3 class="card-title mb-2 mb-md-6 fw-bold">
-                    秋季旅遊，豪華享受方案
+                    {{ item.title }}
                   </h3>
                   <p class="card-text text-neutral-80 fs-8 fs-md-7 fw-medium">
-                    秋天就是要來場豪華的旅遊！我們為您準備了一系列的秋季特別方案，包括舒適的住宿、美食饗宴，以及精彩的活動。不論您是想來一趟浪漫之旅，還是想和家人共度美好時光，都能在這裡找到最適合的方案。
+                    {{ item.description }}
                   </p>
                 </div>
               </div>
             </div>
 
-            <div class="card bg-transparent border-0">
+            <!-- <div class="card bg-transparent border-0">
               <div
                 class="d-flex flex-column flex-md-row align-items-center gap-6"
               >
@@ -159,7 +169,7 @@ const slideNext = () => {
                   </p>
                 </div>
               </div>
-            </div>
+            </div> -->
           </div>
         </div>
       </div>
@@ -205,7 +215,7 @@ const slideNext = () => {
         <Swiper
           ref="roomSwiper"
           :modules="[Autoplay, Pagination]"
-          :pagination="{ el: '.swiper-pagination'}"
+          :pagination="{ el: '.swiper-pagination' }"
           :slidesPerView="1"
           :autoplay="{
             delay: 5000,

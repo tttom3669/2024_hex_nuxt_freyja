@@ -1,7 +1,52 @@
 <script setup>
+const { $swalFire } = useNuxtApp();
+const router = useRouter();
 definePageMeta({
   layout: 'account',
 });
+const loginData = ref({});
+const login = async () => {
+  try {
+    const cookie = useCookie('auth', { path: '/' });
+    const { token } = await $fetch(`/api/v1/user/login`, {
+      method: 'POST',
+      baseURL: 'https://freyja-wtj7.onrender.com/',
+      body: {
+        ...loginData.value,
+      },
+    });
+    cookie.value = token;
+    $swalFire({ title: '成功登入', icon: 'success' });
+    router.push('/');
+  } catch (error) {
+    $swalFire({
+      title: error.response._data.message || '登入失敗',
+      icon: 'error',
+    });
+  }
+};
+
+// const forgetPassword = async () => {
+//   try {
+//     const res = await $fetch(`/api/v1/user/forgot`, {
+//       method: 'POST',
+//       baseURL: 'https://freyja-wtj7.onrender.com/',
+//       body: {
+//         email: 'test1234@gmail.com',
+//         code: '0Zvjde',
+//         newPassword: 'Dirt5528295',
+//       },
+//     });
+//     console.log(res);
+
+//     $swalFire({ title: '成功更換密碼', icon: 'success' });
+//   } catch (error) {
+//     $swalFire({
+//       title: error.response._data.message || '更換密碼失敗',
+//       icon: 'error',
+//     });
+//   }
+// };
 </script>
 
 <template>
@@ -13,15 +58,15 @@ definePageMeta({
       <h1 class="text-neutral-0 fw-bold">立即開始旅程</h1>
     </div>
 
-    <form class="mb-10">
+    <form class="mb-10" @submit.prevent="login">
       <div class="mb-4 fs-8 fs-md-7">
         <label class="mb-2 text-neutral-0 fw-bold" for="email">
           電子信箱
         </label>
         <input
           id="email"
+          v-model="loginData.email"
           class="form-control p-4 text-neutral-100 fw-medium border-neutral-40"
-          value="jessica@sample.com"
           placeholder="請輸入信箱"
           type="email"
         />
@@ -30,8 +75,8 @@ definePageMeta({
         <label class="mb-2 text-neutral-0 fw-bold" for="password"> 密碼 </label>
         <input
           id="password"
+          v-model="loginData.password"
           class="form-control p-4 text-neutral-100 fw-medium border-neutral-40"
-          value="jessica@sample.com"
           placeholder="請輸入密碼"
           type="password"
         />
@@ -53,13 +98,14 @@ definePageMeta({
         <button
           class="text-primary-100 fw-bold text-decoration-underline bg-transparent border-0"
           type="button"
+          @click="forgetPassword"
         >
           忘記密碼？
         </button>
       </div>
       <button
         class="btn btn-primary-100 w-100 py-4 text-neutral-0 fw-bold"
-        type="button"
+        type="submit"
       >
         會員登入
       </button>
