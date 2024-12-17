@@ -1,5 +1,8 @@
 <script setup>
 const roomId = 'a'; // for navigation demo
+const route = useRoute();
+const { id: userId } = route.params;
+// navigateTo(`/user/${userId}/order`)
 </script>
 
 <template>

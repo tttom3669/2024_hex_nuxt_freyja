@@ -1,10 +1,12 @@
 <script setup>
+import { useBookingStore } from '~/stores/booking';
 import DatePickerModal from '@/components/rooms/DatePickerModal.vue';
+const { setRoomData, setBookingData } = useBookingStore();
+
 const datePickerModal = ref(null);
 const route = useRoute();
 const { id: roomId } = route.params;
 const roomData = ref({});
-
 const openModal = () => {
   datePickerModal.value.openModal();
 };
@@ -41,12 +43,25 @@ const handleDateChange = (bookingInfo) => {
   bookingPeople.value = bookingInfo?.people || 1;
   daysCount.value = bookingInfo.daysCount;
 };
+const handleBookingData = () => {
+  setBookingData({
+    checkInDate: bookingDate.date?.start.replaceAll('-', '/'),
+    checkOutDate: bookingDate.date?.end.replaceAll('-', '/'),
+    peopleNum: bookingPeople.value,
+    daysCount: daysCount.value._value,
+  });
+  navigateTo(`/rooms/${roomId}/booking`);
+};
 
 const { data: roomResult } = await useFetch(`/api/v1/rooms/${roomId}`, {
   baseURL: 'https://freyja-wtj7.onrender.com/',
   method: 'GET',
 });
 roomData.value = roomResult.value.result;
+
+onMounted(() => {
+  setRoomData(roomData.value);
+});
 </script>
 
 <template>
@@ -373,7 +388,7 @@ roomData.value = roomResult.value.result;
                 NT$ {{ roomData.price.toLocaleString('zh-TW') }}
               </h5>
               <NuxtLink
-                :to="`/rooms/${roomId}/booking`"
+                @click.prevent="handleBookingData"
                 class="btn btn-primary-100 py-4 text-neutral-0 fw-bold rounded-3"
               >
                 立即預訂
@@ -408,7 +423,7 @@ roomData.value = roomResult.value.result;
             >
           </div>
           <NuxtLink
-            :to="`/rooms/${roomId}/booking`"
+            @click="handleBookingData"
             class="btn btn-primary-100 px-12 py-4 text-neutral-0 fw-bold rounded-3"
           >
             立即預訂

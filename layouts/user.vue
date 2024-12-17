@@ -1,6 +1,6 @@
 <script setup>
 const route = useRoute();
-const { userId } = route.params;
+const { id: userId } = route.params;
 </script>
 
 <template>
