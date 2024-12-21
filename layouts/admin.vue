@@ -28,6 +28,13 @@
               <i class="bi bi-receipt me-2" />
               訂單列表
             </NuxtLink>
+            <NuxtLink
+              class="list-group-item list-group-item-action py-3 text-nowrap"
+              to="/admin/culinary"
+            >
+              <i class="bi bi-receipt me-2" />
+              美味佳餚列表
+            </NuxtLink>
           </ul>
         </div>
         <div class="flex-fill">
