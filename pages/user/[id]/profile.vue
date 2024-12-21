@@ -4,13 +4,20 @@ const isEditPassword = ref(false);
 const isEditProfile = ref(false);
 const userData = ref({});
 const cookie = useCookie('auth');
-const { data: userResult } = await useFetch(`/api/v1/user/`, {
-  method: 'GET',
-  baseURL: 'https://freyja-wtj7.onrender.com/',
-  headers: {
-    Authorization: cookie.value,
-  },
-});
+const getUserApi = () =>
+  $fetch(`/api/v1/user/`, {
+    method: 'GET',
+    baseURL: 'https://freyja-wtj7.onrender.com/',
+    headers: {
+      Authorization: cookie.value,
+    },
+  });
+const { data: userResult } = await useAsyncData('getOrder', () => getUserApi());
+
+const getUser = async () => {
+  const { result } = await getUserApi();
+  userDataInit(result);
+};
 
 const {
   cityData,
@@ -20,33 +27,38 @@ const {
   formatAddress,
   regionInit,
 } = useCity();
+
 const birthData = ref({});
 const formateBirth = ref('');
 const updateUserData = ref({});
 const oldPassword = ref('');
 const newPassword = ref('');
-userData.value = userResult?.value?.result;
 
-const birthDay = new Date(userData.value.birthday);
-const year = birthDay.getFullYear();
-const month = birthDay.getMonth() + 1;
-const day = birthDay.getDate();
+function userDataInit(result) {
+  userData.value = result;
+  const birthDay = new Date(userData.value.birthday);
+  const year = birthDay.getFullYear();
+  const month = birthDay.getMonth() + 1;
+  const day = birthDay.getDate();
 
-birthData.value = {
-  year,
-  month,
-  day,
-};
-formateBirth.value = `${year} 年 ${month} 月 ${day} 日`;
+  birthData.value = {
+    year,
+    month,
+    day,
+  };
+  formateBirth.value = `${year} 年 ${month} 月 ${day} 日`;
 
-const regex = /(.+市)(.+區)(.+)/;
-const addressArr = userData.value.address.detail.match(regex).slice(1);
-addressData.value = {
-  city: addressArr[0],
-  address: addressArr[2],
-  zipcode: userData.value.address.zipcode,
-};
-regionInit();
+  const regex = /(.+市)(.+區)(.+)/;
+  const addressArr = userData.value.address.detail.match(regex).slice(1);
+  addressData.value = {
+    city: addressArr[0],
+    address: addressArr[2],
+    zipcode: userData.value.address.zipcode,
+  };
+  regionInit();
+}
+
+userDataInit(userResult?.value?.result);
 
 const updateUser = async (value, { resetForm }) => {
   updateUserData.value = {
@@ -73,7 +85,11 @@ const updateUser = async (value, { resetForm }) => {
       body: { ...updateUserData.value },
     });
     $swalFire({ title: '成功更新', icon: 'success' });
-    resetForm();
+
+    if (oldPassword.value !== '' || newPassword.value !== '') {
+      resetForm();
+    }
+    getUser();
   } catch (error) {
     $swalFire({
       title: error.response._data.message || '更新失敗',

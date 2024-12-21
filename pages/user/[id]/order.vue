@@ -8,7 +8,6 @@ const currentOrder = ref([]);
 const closestOrder = ref([]);
 const cancelModal = ref(null);
 
-
 const { data: userResult } = await useFetch(`/api/v1/user/`, {
   method: 'GET',
   baseURL: 'https://freyja-wtj7.onrender.com/',
@@ -36,6 +35,9 @@ const getOrder = async () => {
 
 function orderInit(result) {
   const filterResult = result.filter((item) => item.status !== -1);
+  if (filterResult.length <= 0) {
+    return;
+  }
   // 即將來的行程
   closestOrder.value = filterResult.reduce((closest, current) => {
     const closestDate = new Date(closest.checkInDate);
@@ -64,7 +66,7 @@ const daysCount = (checkInDate, checkOutDate) => {
 
 const cancelOrder = async (id) => {
   try {
-    const { c } = await $fetch(`/api/v1/orders/${id}`, {
+    const res = await $fetch(`/api/v1/orders/${id}`, {
       method: 'DELETE',
       baseURL: 'https://freyja-wtj7.onrender.com/',
       headers: {
@@ -89,7 +91,7 @@ onMounted(() => {
 
 <template>
   <div>
-    <div class="row gap-6 gap-md-0">
+    <div v-if="currentOrder.length" class="row gap-6 gap-md-0">
       <div class="col-12 col-md-7">
         <div
           class="rounded-3xl d-flex flex-column gap-6 gap-md-10 p-4 p-md-10 bg-neutral-0"
@@ -289,6 +291,16 @@ onMounted(() => {
           >
             查看更多
           </button>
+        </div>
+      </div>
+    </div>
+    <div v-else class="row gap-6 gap-md-0">
+      <div class="col-12 col-md-7">
+        <div
+          class="rounded-3xl d-flex flex-column gap-6 gap-md-10 p-4 p-md-10 bg-neutral-0"
+          style="max-width: 730px"
+        >
+          未有訂單
         </div>
       </div>
     </div>
