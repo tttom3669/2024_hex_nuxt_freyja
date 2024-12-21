@@ -1,22 +1,33 @@
 <script setup>
 import BookingLoading from '@/components/rooms/BookingLoading.vue';
-const { cityData, regionData, addressData, changeCity, formatAddress } =
-  useCity();
+const {
+  cityData,
+  regionData,
+  addressData,
+  changeCity,
+  formatAddress,
+  regionInit,
+} = useCity();
 const { formatDate } = useBookingFun();
 const { getRoomData, getBookingData } = useBookingStore();
 const { $swalFire } = useNuxtApp();
 const roomData = ref({});
 const bookingData = ref({});
 const userData = ref({});
+const submitButtonRef = ref(null);
 const cookie = useCookie('auth');
 
-const { data: userResult } = useFetch(`/api/v1/user/`, {
+const { data: userResult } = await useFetch(`/api/v1/user/`, {
   method: 'GET',
   baseURL: 'https://freyja-wtj7.onrender.com/',
   headers: {
     Authorization: cookie.value,
   },
 });
+
+const confirmReservation = () => {
+  submitButtonRef.value.click();
+};
 
 /**
  * 套用使用者資料
@@ -30,6 +41,11 @@ const useUserData = () => {
     phone,
     email,
   };
+
+  // 取得目前的 city 並套用對應 region
+  addressData.value.city = addressArr[0];
+  regionInit();
+
   addressData.value = {
     zipcode: address.zipcode,
     city: addressArr[0],
@@ -61,7 +77,6 @@ const confirmBooking = async () => {
       email: userData.value.email,
     },
   };
-
   try {
     const { result } = await $fetch(`/api/v1/orders/`, {
       method: 'POST',
@@ -175,87 +190,109 @@ onMounted(() => {
                   套用會員資料
                 </button>
               </div>
-
-              <div class="d-flex flex-column gap-6">
-                <div class="text-neutral-100">
-                  <label for="name" class="form-label fs-8 fs-md-7 fw-bold"
-                    >姓名</label
-                  >
-                  <input
-                    id="name"
-                    type="text"
-                    v-model="userData.name"
-                    class="form-control p-4 fs-8 fs-md-7 rounded-3"
-                    placeholder="請輸入姓名"
-                  />
-                </div>
-
-                <div class="text-neutral-100">
-                  <label for="phone" class="form-label fs-8 fs-md-7 fw-bold"
-                    >手機號碼</label
-                  >
-                  <input
-                    id="phone"
-                    type="tel"
-                    v-model="userData.phone"
-                    class="form-control p-4 fs-8 fs-md-7 rounded-3"
-                    placeholder="請輸入手機號碼"
-                  />
-                </div>
-
-                <div class="text-neutral-100">
-                  <label for="email" class="form-label fs-8 fs-md-7 fw-bold"
-                    >電子信箱</label
-                  >
-                  <input
-                    id="email"
-                    type="email"
-                    v-model="userData.email"
-                    class="form-control p-4 fs-8 fs-md-7 rounded-3"
-                    placeholder="請輸入電子信箱"
-                  />
-                </div>
-
-                <div class="text-neutral-100">
-                  <label for="address" class="form-label fs-8 fs-md-7 fw-bold"
-                    >地址</label
-                  >
-                  <div className="d-flex gap-2 mb-4">
-                    <select
-                      v-model="addressData.city"
-                      @change="changeCity"
-                      class="form-select w-50 p-4 text-neutral-80 fs-8 fs-md-7 fw-medium rounded-3"
+              <Form v-slot="{ errors }" @submit="confirmBooking">
+                <div class="d-flex flex-column gap-6">
+                  <div class="text-neutral-100">
+                    <label for="name" class="form-label fs-8 fs-md-7 fw-bold"
+                      >姓名</label
                     >
-                      <option
-                        v-for="city in cityData"
-                        :value="city.name"
-                        :key="city.name"
-                      >
-                        {{ city.name }}
-                      </option>
-                    </select>
-                    <select
-                      v-model="addressData.zipcode"
-                      class="form-select w-50 p-4 text-neutral-80 fs-8 fs-md-7 fw-medium rounded-3"
-                    >
-                      <option
-                        v-for="region in regionData"
-                        :value="region.value"
-                        :key="region.value"
-                      >
-                        {{ region.name }}
-                      </option>
-                    </select>
+                    <Field
+                      id="name"
+                      type="text"
+                      name="姓名"
+                      v-model="userData.name"
+                      class="form-control p-4 fs-8 fs-md-7 rounded-3"
+                      :class="{ 'is-invalid': errors['姓名'] }"
+                      placeholder="請輸入姓名"
+                      rules="required|userName"
+                    />
+                    <ErrorMessage class="invalid-feedback" name="姓名" />
                   </div>
-                  <input
-                    id="address"
-                    type="text"
-                    v-model="addressData.address"
-                    class="form-control p-4 fs-8 fs-md-7 rounded-3"
-                    placeholder="請輸入詳細地址"
-                  />
+
+                  <div class="text-neutral-100">
+                    <label for="phone" class="form-label fs-8 fs-md-7 fw-bold"
+                      >手機號碼</label
+                    >
+                    <Field
+                      id="phone"
+                      type="tel"
+                      name="手機號碼"
+                      v-model="userData.phone"
+                      class="form-control p-4 fs-8 fs-md-7 rounded-3"
+                      :class="{ 'is-invalid': errors['手機號碼'] }"
+                      rules="required|userPhone"
+                      placeholder="請輸入手機號碼"
+                    />
+                    <ErrorMessage class="invalid-feedback" name="手機號碼" />
+                  </div>
+
+                  <div class="text-neutral-100">
+                    <label for="email" class="form-label fs-8 fs-md-7 fw-bold"
+                      >電子信箱</label
+                    >
+                    <Field
+                      id="email"
+                      type="email"
+                      name="電子信箱"
+                      v-model="userData.email"
+                      class="form-control p-4 fs-8 fs-md-7 rounded-3"
+                      :class="{ 'is-invalid': errors['電子信箱'] }"
+                      placeholder="請輸入電子信箱"
+                      rules="required"
+                    />
+                    <ErrorMessage class="invalid-feedback" name="電子信箱" />
+                  </div>
+
+                  <div class="text-neutral-100">
+                    <label for="address" class="form-label fs-8 fs-md-7 fw-bold"
+                      >地址</label
+                    >
+                    <div className="d-flex gap-2 mb-4">
+                      <select
+                        v-model="addressData.city"
+                        @change="changeCity"
+                        class="form-select w-50 p-4 text-neutral-80 fs-8 fs-md-7 fw-medium rounded-3"
+                      >
+                        <option
+                          v-for="city in cityData"
+                          :value="city.name"
+                          :key="city.name"
+                        >
+                          {{ city.name }}
+                        </option>
+                      </select>
+                      <select
+                        v-model="addressData.zipcode"
+                        class="form-select w-50 p-4 text-neutral-80 fs-8 fs-md-7 fw-medium rounded-3"
+                      >
+                        <option
+                          v-for="region in regionData"
+                          :value="region.value"
+                          :key="region.value"
+                        >
+                          {{ region.name }}
+                        </option>
+                      </select>
+                    </div>
+                    <Field
+                      id="address"
+                      name="地址"
+                      type="text"
+                      :class="{ 'is-invalid': errors['地址'] }"
+                      v-model="addressData.address"
+                      class="form-control p-4 fs-8 fs-md-7 rounded-3"
+                      placeholder="請輸入詳細地址"
+                      rules="required"
+                    />
+                    <ErrorMessage class="invalid-feedback" name="地址" />
+                  </div>
                 </div>
-              </div>
+                <button
+                  type="submit"
+                  class="d-none"
+                  ref="submitButtonRef"
+                ></button>
+              </Form>
             </section>
 
             <hr class="my-10 my-md-12 opacity-100 text-neutral-60" />
@@ -455,7 +492,7 @@ onMounted(() => {
               <button
                 class="btn btn-primary-100 py-4 text-neutral-0 fw-bold rounded-3"
                 type="button"
-                @click="confirmBooking"
+                @click="confirmReservation"
               >
                 確認訂房
               </button>

@@ -104,8 +104,9 @@ export function useCity() {
   const addressData = ref({
     city: cityData.value[0].name,
     address: '',
-    zipcode: '',
+    zipcode: regionData.value[0].value,
   });
+
   /**
    * 表單更換城市
    */
@@ -121,10 +122,17 @@ export function useCity() {
    */
   const formatAddress = computed(() => {
     const region = regionData.value.filter(
-      (item) => item.value === addressData.value.zipcode
+      (item) => Number(item.value) === Number(addressData.value.zipcode)
     )[0]?.name;
+
     return addressData.value.city + region + addressData.value.address;
   });
+
+  const regionInit = () => {
+    regionData.value = cityData.value.filter(
+      (city) => city.name === addressData.value.city
+    )[0].region;
+  };
 
   return {
     cityData,
@@ -132,5 +140,6 @@ export function useCity() {
     addressData,
     changeCity,
     formatAddress,
+    regionInit,
   };
 }

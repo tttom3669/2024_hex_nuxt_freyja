@@ -88,7 +88,11 @@ onMounted(() => {
                   style="right: 0; left: auto; border-radius: 20px"
                 >
                   <li>
-                    <a class="dropdown-item px-6 py-4" href="#">我的帳戶</a>
+                    <NuxtLink
+                      :to="`/user/${user._id}`"
+                      class="dropdown-item px-6 py-4"
+                      >我的帳戶</NuxtLink
+                    >
                   </li>
                   <li>
                     <a

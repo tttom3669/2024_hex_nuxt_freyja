@@ -11,7 +11,7 @@ const { data } = await useFetch(`/api/v1/orders/${bookingId}`, {
     Authorization: cookie.value,
   },
 });
-const { data: userResult } = useFetch(`/api/v1/user/`, {
+const { data: userResult } = await useFetch(`/api/v1/user/`, {
   method: 'GET',
   baseURL: 'https://freyja-wtj7.onrender.com/',
   headers: {

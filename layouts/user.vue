@@ -1,6 +1,14 @@
 <script setup>
 const route = useRoute();
-const { id: userId } = route.params;
+// const { id: userId } = route.params;
+const cookie = useCookie('auth');
+const { data: userResult } = await useFetch(`/api/v1/user/`, {
+  method: 'GET',
+  baseURL: 'https://freyja-wtj7.onrender.com/',
+  headers: {
+    Authorization: cookie.value,
+  },
+});
 </script>
 
 <template>
@@ -29,7 +37,9 @@ const { id: userId } = route.params;
               src="@/assets/images/avatar-6.png"
               alt="avatar"
             />
-            <h1 class="text-neutral-0 fw-bold">Hello，Jessica</h1>
+            <h1 class="text-neutral-0 fw-bold">
+              Hello，{{ userResult?.result.name }}
+            </h1>
           </div>
         </div>
       </section>
@@ -39,7 +49,7 @@ const { id: userId } = route.params;
           <ul class="nav mb-10 mb-md-20 fw-bold">
             <li class="nav-item position-relative">
               <NuxtLink
-                :to="`/user/${userId}/profile`"
+                :to="`/user/${userResult.result._id}/profile`"
                 exact-active-class="text-primary-100"
                 class="nav-link px-6 py-4 text-white"
               >
@@ -48,7 +58,7 @@ const { id: userId } = route.params;
             </li>
             <li class="nav-item position-relative">
               <NuxtLink
-                :to="`/user/${userId}/order`"
+                :to="`/user/${userResult.result._id}/order`"
                 exact-active-class="text-primary-100"
                 class="nav-link px-6 py-4 text-white"
               >
